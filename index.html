@@ -8,50 +8,97 @@
   <meta name="theme-color" content="#ffcc00">
   <style>
     body {
-      font-family: 'Apple SD Gothic Neo', sans-serif;
-      background: #fffbe6;
+      font-family: 'Pretendard', sans-serif;
+      background: #fff;
+      color: #222;
       margin: 0;
-      padding: 0;
       text-align: center;
+      padding: 40px 20px;
     }
-    .container {
-      max-width: 400px;
-      margin: 80px auto;
-      padding: 20px;
-    }
-    img {
-      width: 120px;
-      height: 120px;
-      border-radius: 20px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    }
-    h1 {
-      color: #333;
-      font-size: 24px;
-      margin-top: 20px;
-      margin-bottom: 10px;
-    }
-    p {
-      color: #555;
+    h1 { color: #000; }
+    button {
+      padding: 12px 25px;
       font-size: 16px;
-      line-height: 1.6;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
     }
-    .close {
+    #installBtn { background: #ffcc00; color: #000; }
+    #guideBtn { background: #007bff; color: white; }
+    #guide {
+      display: none;
+      background: #fff8dc;
+      border-radius: 10px;
+      padding: 15px;
+      margin-top: 20px;
+      text-align: left;
+    }
+    a.back {
       display: inline-block;
       margin-top: 25px;
-      color: #777;
-      font-size: 14px;
-      text-decoration: underline;
-      cursor: pointer;
+      text-decoration: none;
+      background: #28a745;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <img src="https://raw.githubusercontent.com/trotcodi-ui/curiolotto/main/lotto-icon-512x512.png" alt="로또GO 아이콘">
-    <h1>📱 로또GO 홈화면 추가</h1>
-    <p>홈화면에 추가하면 매주 최신 로또 결과를 빠르게 확인할 수 있습니다.</p>
-    <div class="close" onclick="window.close()">닫기</div>
+
+  <h1>📱 로또GO 홈화면 바로가기</h1>
+  <p>홈화면에 추가하고 매주 로또 결과를 빠르게 확인하세요!</p>
+
+  <!-- 안드로이드용 설치 버튼 -->
+  <button id="installBtn" style="display:none;">🏠 홈화면에 추가</button>
+
+  <!-- iPhone 안내 버튼 -->
+  <button id="guideBtn" style="display:none;">📲 홈화면 추가 방법 보기</button>
+
+  <div id="guide">
+    <b>📱 iPhone (Safari)</b><br>
+    ① 하단 중앙의 <b>공유버튼</b> 클릭<br>
+    ② <b>“홈 화면에 추가”</b> 선택<br><br>
+    <b>🤖 Android (Chrome)</b><br>
+    메뉴(⋮) → <b>홈 화면에 추가</b> 선택
   </div>
+
+  <a class="back" href="https://pogkr.tistory.com/entry/%EB%A1%9C%EB%98%90-%EB%B2%88%ED%98%B8-%ED%99%95%EC%9D%B8-%EA%B3%BC%EA%B1%B0-1%EB%93%B1-%EB%8B%B9%EC%B2%A8-%EC%9E%90%EB%8F%99-%ED%99%95%EC%9D%B8%EA%B8%B0-%EB%A7%A4%EC%A3%BC-%EC%97%85%EB%8D%B0%EC%9D%B4%ED%8A%B8" target="_blank">로또 번호 확인 페이지로 돌아가기</a>
+
+  <script>
+    let deferredPrompt;
+
+    // Android 설치 이벤트 감지
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      document.getElementById('installBtn').style.display = 'inline-block';
+    });
+
+    // Android: 홈화면 추가 실행
+    document.getElementById('installBtn').addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const choice = await deferredPrompt.userChoice;
+        if (choice.outcome === 'accepted') {
+          console.log('사용자가 홈화면 추가를 수락함');
+        }
+        deferredPrompt = null;
+      }
+    });
+
+    // iPhone 감지 후 안내버튼 노출
+    const isIOS = /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+    if (isIOS) {
+      document.getElementById('guideBtn').style.display = 'inline-block';
+      document.getElementById('guideBtn').addEventListener('click', () => {
+        const g = document.getElementById('guide');
+        g.style.display = g.style.display === 'none' ? 'block' : 'none';
+      });
+    }
+  </script>
+
 </body>
 </html>
