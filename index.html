@@ -58,32 +58,45 @@
   </div>
 
   <script>
-    // ✅ 홈화면 아이콘으로 열렸는지 감지해서 자동 리디렉션
+    /*  
+    -----------------------------------------------------
+    🔥 수정된 핵심 포인트:
+    - 모바일에서 페이지가 원래 페이지로 돌아가는 문제 해결
+    - 홈 화면 아이콘(standalone 모드)에서 실행될 때만 리디렉션 유지
+    -----------------------------------------------------
+    */
+
+    // 홈 화면 아이콘 실행 여부 체크
+    const isStandalone =
+      window.matchMedia('(display-mode: standalone)').matches ||
+      window.navigator.standalone === true;
+
     const redirectURL = "https://pogkr.tistory.com/entry/%EB%A1%9C%EB%98%90-%EB%B2%88%ED%98%B8-%ED%99%95%EC%9D%B8-%EA%B3%BC%EA%B1%B0-1%EB%93%B1-%EB%8B%B9%EC%B2%A8-%EC%9E%90%EB%8F%99-%ED%99%95%EC%9D%B8%EA%B8%B0-%EB%A7%A4%EC%A3%BC-%EC%97%85%EB%8D%B0%EC%9D%B4%ED%8A%B8";
 
-    if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
-      // 홈화면에서 실행 중이면 → 자동 리디렉션
+    // 🔥 홈 화면에서 실행될 때만 리디렉션
+    if (isStandalone) {
       window.location.href = redirectURL;
     }
 
-    // ---- 기존 홈화면 추가 코드 유지 ----
+    // ---- 기존 홈화면 추가 기능 유지 ----
     let deferredPrompt;
     const btn = document.getElementById('homeBtn');
     const popup = document.getElementById('popup');
     const isIOS = /iphone|ipad|ipod/i.test(window.navigator.userAgent);
 
-    // Android - beforeinstallprompt 이벤트 감지
+    // Android 설치 이벤트 감지
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
     });
 
+    // 버튼 클릭
     btn.addEventListener('click', async () => {
       if (isIOS) {
-        // iPhone → 안내 팝업만 표시
+        // iPhone → 안내 팝업
         popup.style.display = 'block';
       } else if (deferredPrompt) {
-        // Android → 홈화면 추가 실행
+        // Android 설치 실행
         deferredPrompt.prompt();
         await deferredPrompt.userChoice;
         deferredPrompt = null;
